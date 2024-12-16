@@ -3,6 +3,7 @@ import { Droplets, Thermometer, Sprout, Sun } from "lucide-react";
 import { SensorCard } from "@/components/SensorCard";
 import { SensorChart } from "@/components/SensorChart";
 import { SettingsDialog } from "@/components/SettingsDialog";
+import { PlantVisualization } from "@/components/PlantVisualization";
 import { PlantSettings, SensorData } from "@/types/plant";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
@@ -101,31 +102,34 @@ const Index = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <SensorChart
-          data={sensorData}
-          dataKey="temperature"
-          title="Temperature History"
-          unit="°C"
-        />
-        <SensorChart
-          data={sensorData}
-          dataKey="humidity"
-          title="Humidity History"
-          unit="%"
-        />
-        <SensorChart
-          data={sensorData}
-          dataKey="soilMoisture"
-          title="Soil Moisture History"
-          unit="%"
-        />
-        <SensorChart
-          data={sensorData}
-          dataKey="lightLevel"
-          title="Light Level History"
-          unit="lux"
-        />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <PlantVisualization currentData={currentData} className="lg:col-span-1" />
+        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <SensorChart
+            data={sensorData}
+            dataKey="temperature"
+            title="Temperature History"
+            unit="°C"
+          />
+          <SensorChart
+            data={sensorData}
+            dataKey="humidity"
+            title="Humidity History"
+            unit="%"
+          />
+          <SensorChart
+            data={sensorData}
+            dataKey="soilMoisture"
+            title="Soil Moisture History"
+            unit="%"
+          />
+          <SensorChart
+            data={sensorData}
+            dataKey="lightLevel"
+            title="Light Level History"
+            unit="lux"
+          />
+        </div>
       </div>
     </div>
   );
