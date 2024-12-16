@@ -31,10 +31,14 @@ export function SensorChart({ data, dataKey, title, unit }: SensorChartProps) {
             <Tooltip 
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
+                  const value = payload[0].value;
+                  const displayValue = typeof value === 'number' 
+                    ? value.toFixed(1) 
+                    : value;
                   return (
                     <div className="glass-card p-2">
                       <p className="text-sm font-medium">
-                        {payload[0].value?.toFixed(1)} {unit}
+                        {displayValue} {unit}
                       </p>
                     </div>
                   );
