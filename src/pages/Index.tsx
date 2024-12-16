@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Droplets, Thermometer, Sprout, Sun } from "lucide-react";
 import { SensorCard } from "@/components/SensorCard";
 import { SensorChart } from "@/components/SensorChart";
@@ -7,12 +6,25 @@ import { SettingsDialog } from "@/components/SettingsDialog";
 import { PlantSettings, SensorData } from "@/types/plant";
 import { useToast } from "@/hooks/use-toast";
 
-// This would be replaced with your actual API endpoint
-const fetchSensorData = async (): Promise<SensorData[]> => {
-  const response = await fetch('YOUR_MONGODB_API_ENDPOINT');
-  if (!response.ok) throw new Error('Failed to fetch sensor data');
-  return response.json();
+// Dummy data generator
+const generateDummyData = (count: number): SensorData[] => {
+  const data: SensorData[] = [];
+  const now = new Date();
+  
+  for (let i = count - 1; i >= 0; i--) {
+    const timestamp = new Date(now.getTime() - i * 30000); // 30-second intervals
+    data.push({
+      timestamp: timestamp.toISOString(),
+      temperature: 20 + Math.random() * 8, // 20-28°C
+      humidity: 45 + Math.random() * 20, // 45-65%
+      soilMoisture: 35 + Math.random() * 40, // 35-75%
+      lightLevel: 2000 + Math.random() * 2000, // 2000-4000 lux
+    });
+  }
+  return data;
 };
+
+const dummyData = generateDummyData(50); // Generate 50 data points
 
 const defaultSettings: PlantSettings = {
   minTemperature: 18,
@@ -28,14 +40,21 @@ const defaultSettings: PlantSettings = {
 const Index = () => {
   const { toast } = useToast();
   const [settings, setSettings] = useState<PlantSettings>(defaultSettings);
+  const [sensorData, setSensorData] = useState<SensorData[]>(dummyData);
 
-  const { data: sensorData, isLoading, error } = useQuery({
-    queryKey: ['sensorData'],
-    queryFn: fetchSensorData,
-    refetchInterval: 30000, // Refetch every 30 seconds
-  });
+  // Simulate real-time updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSensorData(prev => {
+        const newDataPoint = generateDummyData(1)[0];
+        return [...prev.slice(1), newDataPoint];
+      });
+    }, 30000); // Update every 30 seconds
 
-  const currentData = sensorData?.[0];
+    return () => clearInterval(interval);
+  }, []);
+
+  const currentData = sensorData[sensorData.length - 1];
 
   const getSensorStatus = (value: number, min: number, max: number) => {
     if (value < min || value > max) return "critical";
@@ -64,8 +83,6 @@ const Index = () => {
     }
   }, [currentData, settings, toast]);
 
-  if (isLoading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
-  if (error) return <div className="flex items-center justify-center min-h-screen">Error loading sensor data</div>;
   if (!currentData) return null;
 
   return (
