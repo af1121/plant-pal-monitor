@@ -5,26 +5,7 @@ import { SensorChart } from "@/components/SensorChart";
 import { SettingsDialog } from "@/components/SettingsDialog";
 import { PlantSettings, SensorData } from "@/types/plant";
 import { useToast } from "@/hooks/use-toast";
-
-// Dummy data generator
-const generateDummyData = (count: number): SensorData[] => {
-  const data: SensorData[] = [];
-  const now = new Date();
-  
-  for (let i = count - 1; i >= 0; i--) {
-    const timestamp = new Date(now.getTime() - i * 30000); // 30-second intervals
-    data.push({
-      timestamp: timestamp.toISOString(),
-      temperature: 20 + Math.random() * 8, // 20-28°C
-      humidity: 45 + Math.random() * 20, // 45-65%
-      soilMoisture: 35 + Math.random() * 40, // 35-75%
-      lightLevel: 2000 + Math.random() * 2000, // 2000-4000 lux
-    });
-  }
-  return data;
-};
-
-const dummyData = generateDummyData(50); // Generate 50 data points
+import { useQuery } from "@tanstack/react-query";
 
 const defaultSettings: PlantSettings = {
   minTemperature: 18,
@@ -37,24 +18,43 @@ const defaultSettings: PlantSettings = {
   maxLightLevel: 5000,
 };
 
+// Fetch function for the sensor data
+const fetchSensorData = async (): Promise<SensorData[]> => {
+  const response = await fetch('http://localhost:3000/api/sensors');
+  if (!response.ok) {
+    throw new Error('Failed to fetch sensor data');
+  }
+  return response.json();
+};
+
 const Index = () => {
   const { toast } = useToast();
   const [settings, setSettings] = useState<PlantSettings>(defaultSettings);
-  const [sensorData, setSensorData] = useState<SensorData[]>(dummyData);
+  
+  // Use React Query for data fetching
+  const { data: sensorData = [], isError, error } = useQuery({
+    queryKey: ['sensorData'],
+    queryFn: fetchSensorData,
+    refetchInterval: 30000, // Refetch every 30 seconds
+  });
 
-  // Simulate real-time updates
+  // Show error toast if fetch fails
   useEffect(() => {
-    const interval = setInterval(() => {
-      setSensorData(prev => {
-        const newDataPoint = generateDummyData(1)[0];
-        return [...prev.slice(1), newDataPoint];
+    if (isError && error instanceof Error) {
+      toast({
+        title: "Error fetching sensor data",
+        description: error.message,
+        variant: "destructive",
       });
-    }, 30000); // Update every 30 seconds
+    }
+  }, [isError, error, toast]);
 
-    return () => clearInterval(interval);
-  }, []);
-
-  const currentData = sensorData[sensorData.length - 1];
+  const currentData = sensorData[sensorData.length - 1] || {
+    temperature: 0,
+    humidity: 0,
+    soilMoisture: 0,
+    lightLevel: 0,
+  };
 
   const getSensorStatus = (value: number, min: number, max: number) => {
     if (value < min || value > max) return "critical";
@@ -62,28 +62,6 @@ const Index = () => {
     if (value < min + buffer || value > max - buffer) return "warning";
     return "optimal";
   };
-
-  useEffect(() => {
-    if (currentData) {
-      const checkAndNotify = (value: number, min: number, max: number, metric: string) => {
-        if (value < min || value > max) {
-          toast({
-            title: `${metric} Alert`,
-            description: `${metric} is outside optimal range!`,
-            variant: "destructive",
-          });
-          // Here you would implement the Twitter API call
-        }
-      };
-
-      checkAndNotify(currentData.temperature, settings.minTemperature, settings.maxTemperature, "Temperature");
-      checkAndNotify(currentData.humidity, settings.minHumidity, settings.maxHumidity, "Humidity");
-      checkAndNotify(currentData.soilMoisture, settings.minSoilMoisture, settings.maxSoilMoisture, "Soil Moisture");
-      checkAndNotify(currentData.lightLevel, settings.minLightLevel, settings.maxLightLevel, "Light Level");
-    }
-  }, [currentData, settings, toast]);
-
-  if (!currentData) return null;
 
   return (
     <div className="container mx-auto p-4 space-y-8 animate-fade-in">
