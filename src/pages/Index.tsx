@@ -51,6 +51,7 @@ const Index = () => {
   }, [isError, error, toast]);
 
   const currentData = sensorData[sensorData.length - 1] || {
+    timestamp: new Date().toISOString(),
     temperature: 0,
     humidity: 0,
     soilMoisture: 0,
