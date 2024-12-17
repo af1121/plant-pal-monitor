@@ -2,8 +2,8 @@ export interface SensorData {
   timestamp: string;
   temperature: number;
   humidity: number;
-  soilMoisture: number;
-  lightLevel: number;
+  soilmoisture: number;
+  light: number;
 }
 
 export interface PlantSettings {
@@ -11,8 +11,8 @@ export interface PlantSettings {
   maxTemperature: number;
   minHumidity: number;
   maxHumidity: number;
-  minSoilMoisture: number;
-  maxSoilMoisture: number;
-  minLightLevel: number;
-  maxLightLevel: number;
+  minsoilmoisture: number;
+  maxsoilmoisture: number;
+  minlight: number;
+  maxlight: number;
 }

@@ -94,26 +94,26 @@ export function SettingsDialog({ settings, onSave }: SettingsDialogProps) {
               <Label>Soil Moisture Range (%)</Label>
               <div className="pt-2">
                 <Slider
-                  value={[localSettings.minSoilMoisture]}
+                  value={[localSettings.minsoilmoisture]}
                   min={0}
                   max={100}
                   step={1}
-                  onValueChange={(value) => handleSliderChange(value, "minSoilMoisture")}
+                  onValueChange={(value) => handleSliderChange(value, "minsoilmoisture")}
                 />
                 <div className="flex justify-between mt-1">
-                  <span className="text-sm text-muted-foreground">Min: {localSettings.minSoilMoisture}%</span>
+                  <span className="text-sm text-muted-foreground">Min: {localSettings.minsoilmoisture}%</span>
                 </div>
               </div>
               <div className="pt-2">
                 <Slider
-                  value={[localSettings.maxSoilMoisture]}
+                  value={[localSettings.maxsoilmoisture]}
                   min={0}
                   max={100}
                   step={1}
-                  onValueChange={(value) => handleSliderChange(value, "maxSoilMoisture")}
+                  onValueChange={(value) => handleSliderChange(value, "maxsoilmoisture")}
                 />
                 <div className="flex justify-between mt-1">
-                  <span className="text-sm text-muted-foreground">Max: {localSettings.maxSoilMoisture}%</span>
+                  <span className="text-sm text-muted-foreground">Max: {localSettings.maxsoilmoisture}%</span>
                 </div>
               </div>
             </div>
@@ -122,26 +122,26 @@ export function SettingsDialog({ settings, onSave }: SettingsDialogProps) {
               <Label>Light Level Range (lux)</Label>
               <div className="pt-2">
                 <Slider
-                  value={[localSettings.minLightLevel]}
+                  value={[localSettings.minlight]}
                   min={0}
                   max={10000}
                   step={100}
-                  onValueChange={(value) => handleSliderChange(value, "minLightLevel")}
+                  onValueChange={(value) => handleSliderChange(value, "minlight")}
                 />
                 <div className="flex justify-between mt-1">
-                  <span className="text-sm text-muted-foreground">Min: {localSettings.minLightLevel} lux</span>
+                  <span className="text-sm text-muted-foreground">Min: {localSettings.minlight} lux</span>
                 </div>
               </div>
               <div className="pt-2">
                 <Slider
-                  value={[localSettings.maxLightLevel]}
+                  value={[localSettings.maxlight]}
                   min={0}
                   max={10000}
                   step={100}
-                  onValueChange={(value) => handleSliderChange(value, "maxLightLevel")}
+                  onValueChange={(value) => handleSliderChange(value, "maxlight")}
                 />
                 <div className="flex justify-between mt-1">
-                  <span className="text-sm text-muted-foreground">Max: {localSettings.maxLightLevel} lux</span>
+                  <span className="text-sm text-muted-foreground">Max: {localSettings.maxlight} lux</span>
                 </div>
               </div>
             </div>
