@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { Slider } from "@/components/ui/slider";
 import { PlantMessage } from "@/components/PlantMessage";
+import { Button } from "@/components/ui/button";
 
 const defaultSettings: PlantSettings = {
   minTemperature: 18,
@@ -21,7 +22,7 @@ const defaultSettings: PlantSettings = {
 };
 
 // Add TimeRange type
-type TimeRange = '1h' | '6h' | '24h';
+type TimeRange = '1h' | '6h' | '24h' | '1w';
 
 // Add this function near the top of the file, with other utility functions
 const calibrateSoilMoisture = (voltage: number): number => {
@@ -100,23 +101,15 @@ const Index = () => {
   // Filter data based on selected time range
   const filteredData = useMemo(() => {
     const now = new Date();
-    const cutoff = new Date(now.getTime());
-    
-    switch (timeRange) {
-      case '1h':
-        cutoff.setHours(now.getHours() - 1);
-        break;
-      case '6h':
-        cutoff.setHours(now.getHours() - 6);
-        break;
-      case '24h':
-        cutoff.setHours(now.getHours() - 24);
-        break;
-    }
+    const timeRangeInHours = {
+      '1h': 1,
+      '6h': 6,
+      '24h': 24,
+      '1w': 168, // 24 * 7 = 168 hours in a week
+    }[timeRange] || 1;
 
-    return fullSensorData.filter(reading => 
-      new Date(reading.timestamp) >= cutoff
-    );
+    const cutoff = new Date(now.getTime() - timeRangeInHours * 60 * 60 * 1000);
+    return fullSensorData.filter(reading => new Date(reading.timestamp) > cutoff);
   }, [fullSensorData, timeRange]);
 
   useEffect(() => {
@@ -320,36 +313,30 @@ const Index = () => {
               Sensor History
             </h2>
             <div className="flex gap-2">
-              <button
+              <Button
+                variant={timeRange === '1h' ? 'default' : 'outline'}
                 onClick={() => setTimeRange('1h')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                  ${timeRange === '1h' 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'bg-card/50 hover:bg-card/80'
-                  }`}
               >
                 1 Hour
-              </button>
-              <button
+              </Button>
+              <Button
+                variant={timeRange === '6h' ? 'default' : 'outline'}
                 onClick={() => setTimeRange('6h')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                  ${timeRange === '6h' 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'bg-card/50 hover:bg-card/80'
-                  }`}
               >
                 6 Hours
-              </button>
-              <button
+              </Button>
+              <Button
+                variant={timeRange === '24h' ? 'default' : 'outline'}
                 onClick={() => setTimeRange('24h')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                  ${timeRange === '24h' 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'bg-card/50 hover:bg-card/80'
-                  }`}
               >
                 24 Hours
-              </button>
+              </Button>
+              <Button
+                variant={timeRange === '1w' ? 'default' : 'outline'}
+                onClick={() => setTimeRange('1w')}
+              >
+                1 Week
+              </Button>
             </div>
           </div>
 
