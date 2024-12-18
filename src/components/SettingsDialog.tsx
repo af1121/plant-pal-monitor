@@ -1,154 +1,100 @@
-import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Settings } from "lucide-react";
 import { PlantSettings } from "@/types/plant";
 import { Slider } from "@/components/ui/slider";
 
 interface SettingsDialogProps {
   settings: PlantSettings;
-  onSave: (settings: PlantSettings) => void;
+  onSettingsChange: (settings: PlantSettings) => void;
 }
 
-export function SettingsDialog({ settings, onSave }: SettingsDialogProps) {
-  const [localSettings, setLocalSettings] = useState(settings);
-
-  const handleSliderChange = (value: number[], key: keyof PlantSettings) => {
-    setLocalSettings(prev => ({
-      ...prev,
-      [key]: value[0]
-    }));
-  };
-
+export function SettingsDialog({ settings, onSettingsChange }: SettingsDialogProps) {
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Settings className="h-4 w-4" />
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="glass-card sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Plant Settings</DialogTitle>
-        </DialogHeader>
-        <div className="grid gap-6 py-4">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Temperature Range (°C)</Label>
-              <div className="pt-2">
-                <Slider
-                  value={[localSettings.minTemperature]}
-                  min={10}
-                  max={35}
-                  step={1}
-                  onValueChange={(value) => handleSliderChange(value, "minTemperature")}
-                />
-                <div className="flex justify-between mt-1">
-                  <span className="text-sm text-muted-foreground">Min: {localSettings.minTemperature}°C</span>
-                </div>
-              </div>
-              <div className="pt-2">
-                <Slider
-                  value={[localSettings.maxTemperature]}
-                  min={10}
-                  max={35}
-                  step={1}
-                  onValueChange={(value) => handleSliderChange(value, "maxTemperature")}
-                />
-                <div className="flex justify-between mt-1">
-                  <span className="text-sm text-muted-foreground">Max: {localSettings.maxTemperature}°C</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Humidity Range (%)</Label>
-              <div className="pt-2">
-                <Slider
-                  value={[localSettings.minHumidity]}
-                  min={20}
-                  max={90}
-                  step={1}
-                  onValueChange={(value) => handleSliderChange(value, "minHumidity")}
-                />
-                <div className="flex justify-between mt-1">
-                  <span className="text-sm text-muted-foreground">Min: {localSettings.minHumidity}%</span>
-                </div>
-              </div>
-              <div className="pt-2">
-                <Slider
-                  value={[localSettings.maxHumidity]}
-                  min={20}
-                  max={90}
-                  step={1}
-                  onValueChange={(value) => handleSliderChange(value, "maxHumidity")}
-                />
-                <div className="flex justify-between mt-1">
-                  <span className="text-sm text-muted-foreground">Max: {localSettings.maxHumidity}%</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Soil Moisture Range (%)</Label>
-              <div className="pt-2">
-                <Slider
-                  value={[localSettings.minsoilmoisture]}
-                  min={0}
-                  max={100}
-                  step={1}
-                  onValueChange={(value) => handleSliderChange(value, "minsoilmoisture")}
-                />
-                <div className="flex justify-between mt-1">
-                  <span className="text-sm text-muted-foreground">Min: {localSettings.minsoilmoisture}%</span>
-                </div>
-              </div>
-              <div className="pt-2">
-                <Slider
-                  value={[localSettings.maxsoilmoisture]}
-                  min={0}
-                  max={100}
-                  step={1}
-                  onValueChange={(value) => handleSliderChange(value, "maxsoilmoisture")}
-                />
-                <div className="flex justify-between mt-1">
-                  <span className="text-sm text-muted-foreground">Max: {localSettings.maxsoilmoisture}%</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Light Level Range (lux)</Label>
-              <div className="pt-2">
-                <Slider
-                  value={[localSettings.minlight]}
-                  min={0}
-                  max={10000}
-                  step={100}
-                  onValueChange={(value) => handleSliderChange(value, "minlight")}
-                />
-                <div className="flex justify-between mt-1">
-                  <span className="text-sm text-muted-foreground">Min: {localSettings.minlight} lux</span>
-                </div>
-              </div>
-              <div className="pt-2">
-                <Slider
-                  value={[localSettings.maxlight]}
-                  min={0}
-                  max={10000}
-                  step={100}
-                  onValueChange={(value) => handleSliderChange(value, "maxlight")}
-                />
-                <div className="flex justify-between mt-1">
-                  <span className="text-sm text-muted-foreground">Max: {localSettings.maxlight} lux</span>
-                </div>
-              </div>
-            </div>
+    <div className="space-y-6">
+      <div className="relative">
+        <div className="absolute inset-x-0 top-1/2 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+        <h2 className="text-xl font-semibold text-center relative">
+          <span className="bg-card/50 px-4 bg-gradient-to-r from-green-500 to-emerald-700 bg-clip-text text-transparent">
+            Ideal Conditions
+          </span>
+        </h2>
+      </div>
+      
+      <div className="space-y-6">
+        {/* Temperature Slider */}
+        <div className="group space-y-2 transition-all hover:bg-card/50 p-3 rounded-lg">
+          <div className="flex justify-between">
+            <span className="text-sm font-medium">Temperature Range</span>
+            <span className="text-sm text-muted-foreground">
+              {settings.minTemperature}°C - {settings.maxTemperature}°C
+            </span>
           </div>
+          <Slider
+            min={0}
+            max={40}
+            step={1}
+            value={[settings.minTemperature, settings.maxTemperature]}
+            onValueChange={([min, max]) =>
+              onSettingsChange({ ...settings, minTemperature: min, maxTemperature: max })
+            }
+          />
         </div>
-        <Button onClick={() => onSave(localSettings)}>Save Settings</Button>
-      </DialogContent>
-    </Dialog>
+
+        {/* Humidity Slider */}
+        <div className="group space-y-2 transition-all hover:bg-card/50 p-3 rounded-lg">
+          <div className="flex justify-between">
+            <span className="text-sm font-medium">Humidity Range</span>
+            <span className="text-sm text-muted-foreground">
+              {settings.minHumidity}% - {settings.maxHumidity}%
+            </span>
+          </div>
+          <Slider
+            min={0}
+            max={100}
+            step={1}
+            value={[settings.minHumidity, settings.maxHumidity]}
+            onValueChange={([min, max]) =>
+              onSettingsChange({ ...settings, minHumidity: min, maxHumidity: max })
+            }
+          />
+        </div>
+
+        {/* Soil Moisture Slider */}
+        <div className="group space-y-2 transition-all hover:bg-card/50 p-3 rounded-lg">
+          <div className="flex justify-between">
+            <span className="text-sm font-medium">Soil Moisture Range</span>
+            <span className="text-sm text-muted-foreground">
+              {settings.minsoilmoisture}% - {settings.maxsoilmoisture}%
+            </span>
+          </div>
+          <Slider
+            min={0}
+            max={100}
+            step={1}
+            value={[settings.minsoilmoisture, settings.maxsoilmoisture]}
+            onValueChange={([min, max]) =>
+              onSettingsChange({ ...settings, minsoilmoisture: min, maxsoilmoisture: max })
+            }
+          />
+        </div>
+
+        {/* Light Level Slider */}
+        <div className="group space-y-2 transition-all hover:bg-card/50 p-3 rounded-lg">
+          <div className="flex justify-between">
+            <span className="text-sm font-medium">Light Level Range</span>
+            <span className="text-sm text-muted-foreground">
+              {settings.minlight} - {settings.maxlight} lux
+            </span>
+          </div>
+          <Slider
+            min={0}
+            max={1000}
+            step={10}
+            value={[settings.minlight, settings.maxlight]}
+            onValueChange={([min, max]) =>
+              onSettingsChange({ ...settings, minlight: min, maxlight: max })
+            }
+          />
+        </div>
+      </div>
+    </div>
   );
 }

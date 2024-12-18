@@ -7,6 +7,7 @@ import { PlantSettings, SensorData } from "@/types/plant";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { Slider } from "@/components/ui/slider";
+import { PlantMessage } from "@/components/PlantMessage";
 
 const defaultSettings: PlantSettings = {
   minTemperature: 18,
@@ -46,7 +47,23 @@ const calibrateLight = (rawValue: number): number => {
 
 const Index = () => {
   const { toast } = useToast();
-  const [settings, setSettings] = useState<PlantSettings>(defaultSettings);
+
+  // Load settings from localStorage or use defaults
+  const loadSavedSettings = (): PlantSettings => {
+    const saved = localStorage.getItem('plantSettings');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return defaultSettings;
+  };
+
+  const [settings, setSettings] = useState<PlantSettings>(loadSavedSettings());
+
+  // Save settings whenever they change
+  useEffect(() => {
+    localStorage.setItem('plantSettings', JSON.stringify(settings));
+  }, [settings]);
+
   const [lastUpdateSeconds, setLastUpdateSeconds] = useState(0);
   const [timeRange, setTimeRange] = useState<TimeRange>('1h');
   
@@ -141,9 +158,20 @@ const Index = () => {
       <div className="container mx-auto space-y-8 max-w-7xl">
         <div className="flex justify-between items-center bg-card/50 p-6 rounded-lg backdrop-blur-sm border border-border/50 shadow-lg">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-green-500 via-emerald-500 to-teal-600 bg-clip-text text-transparent">
-            Plant Monitor Dashboard
+            Cyberbullying Plant Dashboard
           </h1>
         </div>
+
+        <PlantMessage 
+          currentData={fullSensorData[0] || {
+            timestamp: new Date().toISOString(),
+            temperature: 0,
+            humidity: 0,
+            soilmoisture: 0,
+            light: 0,
+          }} 
+          settings={settings}
+        />
 
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-semibold text-foreground">
